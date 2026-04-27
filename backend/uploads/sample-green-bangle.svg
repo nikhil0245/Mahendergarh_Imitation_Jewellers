@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 600">
+  <rect width="600" height="600" fill="#f0fdf4"/>
+  <circle cx="300" cy="300" r="182" fill="none" stroke="#15803d" stroke-width="30"/>
+  <circle cx="300" cy="300" r="145" fill="none" stroke="#22c55e" stroke-width="16"/>
+  <circle cx="300" cy="300" r="112" fill="none" stroke="#86efac" stroke-width="24" stroke-dasharray="12 20"/>
+  <text x="300" y="530" text-anchor="middle" font-size="34" fill="#14532d" font-family="Arial, sans-serif">
+    Green Glass Bangles
+  </text>
+</svg>

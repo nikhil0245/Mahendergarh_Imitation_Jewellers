@@ -1,0 +1,64 @@
+import express from "express";
+import cors from "cors";
+import morgan from "morgan";
+import path from "path";
+import { fileURLToPath } from "url";
+import orderRoutes from "./routes/orderRoutes.js";
+import connectDB from "./config/db.js";
+import authRoutes from "./routes/authRoutes.js";
+import productRoutes from "./routes/productRoutes.js";
+import cartRoutes from "./routes/cartRoutes.js";
+import uploadRoutes from "./routes/uploadRoutes.js";
+import paymentRoutes from "./routes/payment.js";
+import adminRoutes from "./routes/adminRoutes.js";
+import { errorHandler, notFound } from "./middleware/errorMiddleware.js";
+import dotenv from "dotenv";
+dotenv.config();
+connectDB();
+
+const app = express();
+
+// 🔥 FIX __dirname (ESM)
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+// ================= MIDDLEWARE =================
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use("/api/orders", orderRoutes);
+app.use(
+  cors({
+    origin: "http://localhost:5173",
+    credentials: true,
+  }),
+);
+
+app.use(morgan("dev"));
+
+// ================= STATIC FOLDER =================
+// ✅ IMPORTANT (image serving fix)
+app.use("/uploads", express.static(path.join(__dirname, "/uploads")));
+
+// ================= ROUTES =================
+app.use("/api/payment", paymentRoutes);
+app.use("/api/admin", adminRoutes);
+app.use("/api/auth", authRoutes);
+app.use("/api/products", productRoutes);
+app.use("/api/cart", cartRoutes);
+app.use("/api/upload", uploadRoutes);
+
+// ================= ROOT =================
+app.get("/", (req, res) => {
+  res.json({ message: "Bangle Shop API is running" });
+});
+
+// ================= ERROR =================
+app.use(notFound);
+app.use(errorHandler);
+
+// ================= SERVER =================
+const PORT = process.env.PORT || 5001;
+
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
+});
