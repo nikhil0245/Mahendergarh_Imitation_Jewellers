@@ -1,4 +1,4 @@
-# Bangle Shop Ecommerce Website
+# Ecommerce Website
 
 This is a beginner-friendly MERN stack ecommerce website for a bangle shop.
 
