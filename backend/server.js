@@ -26,9 +26,13 @@ const __dirname = path.dirname(__filename);
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use("/api/orders", orderRoutes);
+
 app.use(
   cors({
-    origin: "http://localhost:5173",
+    origin: [
+      "http://localhost:5173",
+      "https://mahendargarh-imitation-jewellers.vercel.app",
+    ],
     credentials: true,
   }),
 );
