@@ -1,4 +1,9 @@
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
+const LOCAL_API_URL = "http://localhost:5001";
+const PRODUCTION_API_URL = "https://mahendergarh-imitation-jewellers.onrender.com";
+
+const API_URL =
+  import.meta.env.VITE_API_URL ||
+  (window.location.hostname === "localhost" ? LOCAL_API_URL : PRODUCTION_API_URL);
 
 // 🔥 Ensure no trailing slash issue
 const BASE_URL = API_URL.replace(/\/+$/, "");

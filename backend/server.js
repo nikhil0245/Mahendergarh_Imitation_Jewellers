@@ -17,25 +17,41 @@ dotenv.config();
 connectDB();
 
 const app = express();
+const allowedOrigins = [
+  "http://localhost:5173",
+  "http://localhost:5174",
+  "https://mahendargarh-imitation-jewellers.vercel.app",
+  "https://mahendergarh-imitation-jewellers.vercel.app",
+  process.env.CLIENT_URL,
+].filter(Boolean);
 
 // 🔥 FIX __dirname (ESM)
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 // ================= MIDDLEWARE =================
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
-app.use("/api/orders", orderRoutes);
-
 app.use(
   cors({
-    origin: [
-      "http://localhost:5173",
-      "https://mahendargarh-imitation-jewellers.vercel.app",
-    ],
+    origin(origin, callback) {
+      if (
+        !origin ||
+        allowedOrigins.includes(origin) ||
+        /^https:\/\/mahend(er|ar)garh-imitation-jewellers.*\.vercel\.app$/.test(
+          origin,
+        )
+      ) {
+        callback(null, true);
+        return;
+      }
+
+      callback(new Error(`CORS blocked origin: ${origin}`));
+    },
     credentials: true,
   }),
 );
+
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
 app.use(morgan("dev"));
 
@@ -49,11 +65,12 @@ app.use("/api/admin", adminRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/products", productRoutes);
 app.use("/api/cart", cartRoutes);
+app.use("/api/orders", orderRoutes);
 app.use("/api/upload", uploadRoutes);
 
 // ================= ROOT =================
 app.get("/", (req, res) => {
-  res.json({ message: "Bangle Shop API is running" });
+  res.json({ message: "mahendargarh API is running" });
 });
 
 // ================= ERROR =================
