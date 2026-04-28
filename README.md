@@ -206,3 +206,5 @@ If you do not run the seed command, signup creates a normal user. In that case, 
 - The seed command adds sample SVG product images, and you can replace them later by uploading real product photos from the admin panel.
 - Cart data is stored in MongoDB for each logged-in user.
 - Checkout/payment is not added yet, but the cart flow is ready for future extension.
+
+test ci cd
