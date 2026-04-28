@@ -1,6 +1,10 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { API_URL, request } from "../api";
+import { request } from "../api";
+import {
+  getProductFallbackImage,
+  getProductImageUrl,
+} from "../utils/productImages";
 
 const RECENT_VIEWS_KEY = "recentViews";
 
@@ -11,15 +15,6 @@ const getRecentViewIds = () => {
   } catch {
     return [];
   }
-};
-
-const getProductImageUrl = (product) => {
-  const imagePath =
-    product.images?.length > 0 ? product.images[0] : product.image || "/placeholder.png";
-
-  return imagePath.startsWith("http") || imagePath === "/placeholder.png"
-    ? imagePath
-    : `${API_URL}${imagePath}`;
 };
 
 const RecentViewsPage = () => {
@@ -85,6 +80,9 @@ const RecentViewsPage = () => {
                   src={getProductImageUrl(product)}
                   alt={product.name}
                   className="recent-view-image"
+                  onError={(event) => {
+                    event.currentTarget.src = getProductFallbackImage(product);
+                  }}
                 />
               </div>
               <div className="recent-view-content">

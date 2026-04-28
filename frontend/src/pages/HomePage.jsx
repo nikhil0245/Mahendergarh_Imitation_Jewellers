@@ -1,9 +1,13 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { request, API_URL } from "../api";
+import { request } from "../api";
 import ProductCard from "../components/ProductCard";
 import { useNavigate, useLocation, Link } from "react-router-dom";
 import heroBg from "../assets/hero-bg.png";
 import heroBg2 from "../assets/hero-bg2.png";
+import {
+  getProductFallbackImage,
+  getProductImageUrl,
+} from "../utils/productImages";
 
 const categoryIconModules = import.meta.glob(
   "../assets/category-icons/*.{png,jpg,jpeg,webp,avif,svg}",
@@ -15,17 +19,6 @@ const categoryIconModules = import.meta.glob(
 
 const normalizeCategoryKey = (value = "") =>
   value.toString().trim().toLowerCase().replace(/\s+/g, "-");
-
-const getProductImageUrl = (product, imageIndex = 0) => {
-  const imagePath =
-    product.images?.length > 0
-      ? product.images[imageIndex] || product.images[0]
-      : product.image || "/placeholder.png";
-
-  return imagePath.startsWith("http") || imagePath === "/placeholder.png"
-    ? imagePath
-    : `${API_URL}${imagePath}`;
-};
 
 const FeaturePreviewTile = ({ product }) => {
   const [imageIndex, setImageIndex] = useState(0);
@@ -50,6 +43,9 @@ const FeaturePreviewTile = ({ product }) => {
           src={getProductImageUrl(product, imageIndex)}
           alt={product.name}
           className="home-feature-image"
+          onError={(event) => {
+            event.currentTarget.src = getProductFallbackImage(product);
+          }}
         />
       </div>
     </Link>

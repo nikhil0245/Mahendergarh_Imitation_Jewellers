@@ -4,6 +4,10 @@ import { API_URL, request } from "../api";
 import { useCart } from "../context/CartContext";
 import { useSavedProducts } from "../context/SavedProductsContext";
 import { useAuth } from "../context/AuthContext";
+import {
+  getProductFallbackImage,
+  getProductImageUrl,
+} from "../utils/productImages";
 
 const RECENT_VIEWS_KEY = "recentViews";
 
@@ -77,12 +81,11 @@ const ProductPage = () => {
 
   const images = useMemo(() => {
     if (!product?.images || product.images.length === 0) {
-      return ["/placeholder.png"];
+      return product?.image ? [product.image] : [];
     }
     return product.images;
   }, [product]);
 
-  const selectedImage = images[selectedImageIndex] || images[0];
   const hasDiscount =
     product?.originalPrice && Number(product.originalPrice) > Number(product.price);
 
@@ -256,11 +259,11 @@ const ProductPage = () => {
               </button>
 
               <img
-                src={toImageUrl(selectedImage)}
+                src={getProductImageUrl(product, selectedImageIndex)}
                 alt={product.name}
                 className="details-image"
                 onError={(event) => {
-                  event.currentTarget.src = "/placeholder.png";
+                  event.currentTarget.src = getProductFallbackImage(product);
                 }}
               />
             </div>
@@ -275,7 +278,7 @@ const ProductPage = () => {
                     className={`thumb ${selectedImageIndex === index ? "active" : ""}`}
                     onClick={() => setSelectedImageIndex(index)}
                     onError={(event) => {
-                      event.currentTarget.src = "/placeholder.png";
+                      event.currentTarget.src = getProductFallbackImage(product);
                     }}
                   />
                 ))}

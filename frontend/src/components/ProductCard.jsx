@@ -1,8 +1,12 @@
 import { Link, useNavigate } from "react-router-dom";
-import { API_URL } from "../api";
 import { useCart } from "../context/CartContext";
 import { useEffect, useState } from "react";
 import { useSavedProducts } from "../context/SavedProductsContext";
+import {
+  getProductFallbackImage,
+  getProductImagePath,
+  getProductImageUrl,
+} from "../utils/productImages";
 
 const ProductCard = ({ product }) => {
   const { addToCart } = useCart();
@@ -14,13 +18,8 @@ const ProductCard = ({ product }) => {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [isImageTransitioning, setIsImageTransitioning] = useState(false);
 
-  const imagePaths =
-    product.images && product.images.length > 0
-      ? product.images
-      : ["/placeholder.png"];
-  const imageUrl = imagePaths[currentImageIndex]?.startsWith("http")
-    ? imagePaths[currentImageIndex]
-    : `${API_URL}${imagePaths[currentImageIndex]}`;
+  const imagePaths = product.images?.length > 0 ? product.images : [getProductImagePath(product)];
+  const imageUrl = getProductImageUrl(product, currentImageIndex);
 
   useEffect(() => {
     if (!isHovering || imagePaths.length <= 1) {
@@ -117,7 +116,9 @@ const ProductCard = ({ product }) => {
             src={imageUrl}
             alt={product.name}
             className={`product-image ${isImageTransitioning ? "is-transitioning" : ""}`}
-            onError={(e) => (e.target.src = "/placeholder.png")}
+            onError={(event) => {
+              event.currentTarget.src = getProductFallbackImage(product);
+            }}
           />
         </Link>
       </div>
