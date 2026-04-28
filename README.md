@@ -190,6 +190,25 @@ Visit:
 http://localhost:5173
 ```
 
+## Deploy Hook CI/CD Setup
+
+This repo uses GitHub Actions as the deploy gate:
+
+```text
+git push -> build checks -> deploy hooks -> Render + Vercel deploy
+```
+
+Create these GitHub repository secrets in `Settings -> Secrets and variables -> Actions`:
+
+```text
+RENDER_DEPLOY_HOOK_URL
+VERCEL_DEPLOY_HOOK_URL
+```
+
+Get the Render value from your backend service deploy hook settings. Get the Vercel value from your frontend project deploy hook settings.
+
+After both secrets are added, push to `main`. If the backend syntax check or frontend build fails, deployment stops. If both pass, GitHub Actions calls the deploy hooks automatically.
+
 ## Admin Login
 
 If you run the seed command, use this admin account:
