@@ -2,10 +2,10 @@ import { Navigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 
 const AdminRoute = ({ children }) => {
-  const { user } = useAuth();
+  const { user, authChecked } = useAuth();
 
   // 🔥 jab tak localStorage load nahi hota
-  if (user === null) {
+  if (!authChecked) {
     return <div>Checking admin...</div>;
   }
 

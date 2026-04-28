@@ -162,7 +162,7 @@ const createProduct = async (req, res) => {
   const {
     name,
     price,
-    originalPrice, // 🔥 ADD THIS
+    originalPrice,
     description,
     category,
     material,
@@ -176,22 +176,27 @@ const createProduct = async (req, res) => {
     : [];
 
   const product = new Product({
-    name,
-    price,
-    originalPrice, // 🔥 SAVE THIS
-    description,
-    category,
-    material,
-    color,
-    countInStock,
+    name: name?.trim(),
+    price: Number(price),
+    originalPrice: originalPrice === "" ? undefined : Number(originalPrice),
+    description: description?.trim(),
+    category: category?.trim() || "Bangles",
+    material: material?.trim() || "Metal",
+    color: color?.trim() || "Gold",
+    countInStock: countInStock === "" ? 0 : Number(countInStock),
     isTrending: isTrending === "true" || isTrending === true,
     trendingAt:
       isTrending === "true" || isTrending === true ? new Date() : null,
     images: imagePaths,
   });
 
-  const createdProduct = await product.save();
-  res.status(201).json(createdProduct);
+  try {
+    const createdProduct = await product.save();
+    res.status(201).json(createdProduct);
+  } catch (error) {
+    res.status(400);
+    throw new Error(error.message || "Invalid product data");
+  }
 };
 
 // ================= UPDATE =================
@@ -207,7 +212,7 @@ const updateProduct = async (req, res) => {
     const {
       name,
       price,
-      originalPrice, // 🔥 ADD THIS
+      originalPrice,
       description,
       category,
       material,
@@ -217,21 +222,24 @@ const updateProduct = async (req, res) => {
       retainedImages,
     } = req.body;
 
-    product.name = name || product.name;
-    product.price = price || product.price;
+    product.name = name?.trim() || product.name;
 
-    // 🔥 UPDATE ORIGINAL PRICE
-    if (originalPrice !== undefined) {
-      product.originalPrice = originalPrice;
+    if (price !== undefined && price !== "") {
+      product.price = Number(price);
     }
 
-    product.description = description || product.description;
-    product.category = category || product.category;
-    product.material = material || product.material;
-    product.color = color || product.color;
+    if (originalPrice !== undefined) {
+      product.originalPrice =
+        originalPrice === "" ? undefined : Number(originalPrice);
+    }
+
+    product.description = description?.trim() || product.description;
+    product.category = category?.trim() || product.category;
+    product.material = material?.trim() || product.material;
+    product.color = color?.trim() || product.color;
 
     if (countInStock !== undefined) {
-      product.countInStock = countInStock;
+      product.countInStock = countInStock === "" ? 0 : Number(countInStock);
     }
 
     if (isTrending !== undefined) {
@@ -262,7 +270,7 @@ const updateProduct = async (req, res) => {
     res.json(updatedProduct);
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: "Error updating product" });
+    res.status(400).json({ message: error.message || "Error updating product" });
   }
 };
 

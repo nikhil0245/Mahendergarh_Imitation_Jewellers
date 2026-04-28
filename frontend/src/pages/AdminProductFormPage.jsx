@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import { API_URL } from "../api";
 
 const AdminProductFormPage = () => {
   const navigate = useNavigate();
@@ -36,7 +37,7 @@ const AdminProductFormPage = () => {
     if (id) {
       setLoading(true);
 
-      fetch(`http://localhost:5001/api/products/${id}`)
+      fetch(`${API_URL}/api/products/${id}`)
         .then((res) => res.json())
         .then((data) => {
           setForm({
@@ -53,7 +54,7 @@ const AdminProductFormPage = () => {
             previews: data.images
               ? data.images.map((img, index) => ({
                   id: `existing-${index}-${img}`,
-                  src: `http://localhost:5001${img}`,
+                  src: `${API_URL}${img}`,
                   fileName: img.split("/").pop() || `Saved image ${index + 1}`,
                   meta: "Saved image",
                   isExisting: true,
@@ -153,8 +154,8 @@ const AdminProductFormPage = () => {
       });
 
       const url = id
-        ? `http://localhost:5001/api/products/${id}`
-        : "http://localhost:5001/api/products";
+        ? `${API_URL}/api/products/${id}`
+        : `${API_URL}/api/products`;
 
       const method = id ? "PUT" : "POST";
 
@@ -168,7 +169,15 @@ const AdminProductFormPage = () => {
 
       const data = await res.json();
 
-      if (!res.ok) throw new Error(data.message);
+      if (res.status === 401 || res.status === 403) {
+        localStorage.removeItem("bangleUser");
+        localStorage.removeItem("token");
+        alert("Please log in again with the admin account.");
+        navigate("/login");
+        return;
+      }
+
+      if (!res.ok) throw new Error(data.message || "Failed to save product");
 
       alert(id ? "Product Updated ✅" : "Product Added ✅");
 
@@ -181,7 +190,7 @@ const AdminProductFormPage = () => {
       navigate("/admin/products");
     } catch (err) {
       console.error(err);
-      alert("Error ❌");
+      alert(err.message || "Failed to save product");
     } finally {
       setLoading(false);
     }
@@ -364,6 +373,7 @@ const AdminProductFormPage = () => {
                     placeholder="Write a polished product description"
                     value={form.description}
                     onChange={handleChange}
+                    required
                   />
                 </div>
 

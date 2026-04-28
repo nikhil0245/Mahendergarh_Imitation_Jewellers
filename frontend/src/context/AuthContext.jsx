@@ -12,6 +12,53 @@ export const AuthProvider = ({ children }) => {
       return null;
     }
   });
+  const [authChecked, setAuthChecked] = useState(false);
+
+  useEffect(() => {
+    let isMounted = true;
+
+    const verifySavedSession = async () => {
+      const token = localStorage.getItem("token");
+
+      if (!token) {
+        if (isMounted) {
+          setUser(null);
+          setAuthChecked(true);
+        }
+        return;
+      }
+
+      try {
+        const data = await request("/api/auth/profile");
+
+        if (isMounted) {
+          setUser({
+            name: data.name,
+            email: data.email,
+            phone: data.phone,
+            _id: data._id,
+            isAdmin: data.isAdmin,
+            token,
+          });
+          setAuthChecked(true);
+        }
+      } catch {
+        localStorage.removeItem("bangleUser");
+        localStorage.removeItem("token");
+
+        if (isMounted) {
+          setUser(null);
+          setAuthChecked(true);
+        }
+      }
+    };
+
+    verifySavedSession();
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
   useEffect(() => {
     if (user) {
@@ -29,8 +76,6 @@ export const AuthProvider = ({ children }) => {
       body: JSON.stringify(formData),
     });
 
-    console.log("LOGIN DATA:", data); // 👈 check this
-
     const userData = {
       name: data.name,
       email: data.email,
@@ -43,6 +88,7 @@ export const AuthProvider = ({ children }) => {
     localStorage.setItem("token", data.token);
 
     setUser(userData);
+    setAuthChecked(true);
     return data;
   };
 
@@ -64,17 +110,19 @@ export const AuthProvider = ({ children }) => {
     localStorage.setItem("token", data.token);
 
     setUser(userData);
+    setAuthChecked(true);
     return data;
   };
 
   const logout = () => {
     setUser(null);
+    setAuthChecked(true);
     localStorage.removeItem("bangleUser");
     localStorage.removeItem("token");
   };
 
   return (
-    <AuthContext.Provider value={{ user, login, signup, logout }}>
+    <AuthContext.Provider value={{ user, authChecked, login, signup, logout }}>
       {children}
     </AuthContext.Provider>
   );
