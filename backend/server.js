@@ -17,13 +17,25 @@ dotenv.config();
 connectDB();
 
 const app = express();
+const envOrigins = [
+  process.env.CLIENT_URL,
+  process.env.CLIENT_URLS,
+]
+  .filter(Boolean)
+  .flatMap((value) => value.split(",").map((origin) => origin.trim()))
+  .filter(Boolean);
+
 const allowedOrigins = [
+  "http://127.0.0.1:3000",
+  "http://127.0.0.1:5173",
+  "http://127.0.0.1:5174",
+  "http://localhost:3000",
   "http://localhost:5173",
   "http://localhost:5174",
   "https://mahendargarh-imitation-jewellers.vercel.app",
   "https://mahendergarh-imitation-jewellers.vercel.app",
-  process.env.CLIENT_URL,
-].filter(Boolean);
+  ...envOrigins,
+];
 
 // 🔥 FIX __dirname (ESM)
 const __filename = fileURLToPath(import.meta.url);

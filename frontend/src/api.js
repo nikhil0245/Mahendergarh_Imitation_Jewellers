@@ -1,9 +1,11 @@
 const LOCAL_API_URL = "http://localhost:5001";
-const PRODUCTION_API_URL = "https://mahendergarh-imitation-jewellers.onrender.com";
+const PRODUCTION_API_URL =
+  "https://mahendergarh-imitation-jewellers.onrender.com";
+const LOCAL_HOSTNAMES = new Set(["localhost", "127.0.0.1", "0.0.0.0"]);
 
-const API_URL =
-  import.meta.env.VITE_API_URL ||
-  (window.location.hostname === "localhost" ? LOCAL_API_URL : PRODUCTION_API_URL);
+const API_URL = LOCAL_HOSTNAMES.has(window.location.hostname)
+  ? LOCAL_API_URL
+  : import.meta.env.VITE_API_URL || PRODUCTION_API_URL;
 
 // 🔥 Ensure no trailing slash issue
 const BASE_URL = API_URL.replace(/\/+$/, "");
