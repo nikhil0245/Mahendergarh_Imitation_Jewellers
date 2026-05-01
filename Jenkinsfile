@@ -2,43 +2,28 @@ pipeline {
     agent any
 
     stages {
+
         stage('Clone Code') {
             steps {
                 echo 'Cloning...'
             }
         }
 
-        stage('Install Dependencies') {
+        stage('Build Docker Image') {
             steps {
-                dir('frontend') {
-                    sh 'npm install'
-                }
-                dir('backend') {
-                    sh 'npm install'
-                }
+                sh 'docker build -t ecommerce-app .'
             }
         }
 
-        stage('Build') {
+        stage('Run Container') {
             steps {
-                dir('frontend') {
-                    sh 'npm run build'
-                }
+                sh '''
+                docker stop ecommerce-container || true
+                docker rm ecommerce-container || true
+                docker run -d -p 3000:3000 --name ecommerce-container ecommerce-app
+                '''
             }
         }
 
-        stage('Test') {
-            steps {
-                echo 'Testing...'
-            }
-        }
-
-        stage('Run App') {
-            steps {
-                dir('backend') {
-                    sh 'npm start &'
-                }
-            }
-        }
     }
 }
