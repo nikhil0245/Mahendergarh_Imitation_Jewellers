@@ -2,9 +2,28 @@ pipeline {
     agent any
 
     stages {
+        stage('Clone Code') {
+            steps {
+                echo 'Cloning...'
+            }
+        }
+
+        stage('Install Dependencies') {
+            steps {
+                dir('frontend') {
+                    sh 'npm install'
+                }
+                dir('backend') {
+                    sh 'npm install'
+                }
+            }
+        }
+
         stage('Build') {
             steps {
-                echo 'Building...'
+                dir('frontend') {
+                    sh 'npm run build'
+                }
             }
         }
 
@@ -14,9 +33,11 @@ pipeline {
             }
         }
 
-        stage('Deploy') {
+        stage('Run App') {
             steps {
-                echo 'Deploying...'
+                dir('backend') {
+                    sh 'npm start &'
+                }
             }
         }
     }
