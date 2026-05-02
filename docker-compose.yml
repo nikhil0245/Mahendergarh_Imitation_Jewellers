@@ -8,6 +8,7 @@ services:
       - ./backend/.env
     environment:
       PORT: 5001
+      CLIENT_URL: http://localhost:3000
       CLIENT_URLS: http://localhost:3000,http://127.0.0.1:3000,http://host.docker.internal:3000
     dns:
       - 8.8.8.8
