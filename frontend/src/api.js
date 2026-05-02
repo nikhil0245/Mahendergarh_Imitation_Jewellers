@@ -1,37 +1,36 @@
-const LOCAL_API_URL = "http://localhost:5001";
-const PRODUCTION_API_URL =
-  "https://mahendergarh-imitation-jewellers.onrender.com";
-const LOCAL_HOSTNAMES = new Set(["localhost", "127.0.0.1", "0.0.0.0"]);
-
-const isDockerFrontend = window.location.port === "3000";
-const API_URL = isDockerFrontend
-  ? ""
-  : LOCAL_HOSTNAMES.has(window.location.hostname)
-    ? LOCAL_API_URL
-    : import.meta.env.VITE_API_URL || PRODUCTION_API_URL;
-
-// 🔥 Ensure no trailing slash issue
-const BASE_URL = API_URL.replace(/\/+$/, "");
+const BASE_URL = "";
 
 const request = async (endpoint, options = {}) => {
   try {
     const token = localStorage.getItem("token");
     const isFormData = options.body instanceof FormData;
 
-    const response = await fetch(`${BASE_URL}${endpoint}`, {
+    const path = endpoint.startsWith("/") ? endpoint : `/${endpoint}`;
+    const response = await fetch(`${BASE_URL}${path}`, {
       method: options.method || "GET",
       headers: {
         ...(!isFormData && { "Content-Type": "application/json" }),
+        Accept: "application/json",
         ...(token && { Authorization: `Bearer ${token}` }),
         ...(options.headers || {}),
       },
       body: options.body,
     });
 
-    const data = await response.json();
+    const contentType = response.headers.get("content-type") || "";
+    const isJson = contentType.includes("application/json");
+    const data = isJson ? await response.json() : await response.text();
 
     if (!response.ok) {
-      throw new Error(data.message || "Something went wrong");
+      throw new Error(
+        isJson
+          ? data.message || "Something went wrong"
+          : `API returned ${response.status} ${response.statusText} instead of JSON`,
+      );
+    }
+
+    if (!isJson) {
+      throw new Error("API returned a non-JSON response");
     }
 
     return data;
