@@ -1,6 +1,10 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { API_URL, request } from "../api";
+import {
+  getProductFallbackImage,
+  getProductImageUrl,
+} from "../utils/productImages";
 
 const AdminProductsPage = () => {
   const [products, setProducts] = useState([]);
@@ -467,13 +471,13 @@ const AdminProductsPage = () => {
                           aria-label={`View details for ${product.name}`}
                         >
                           <img
-                            src={
-                              product.images?.[0]
-                                ? `${API_URL}${product.images[0]}`
-                                : "/placeholder.png"
-                            }
+                            src={getProductImageUrl(product)}
                             alt={product.name}
                             className="admin-img"
+                            onError={(event) => {
+                              event.currentTarget.src =
+                                getProductFallbackImage(product);
+                            }}
                           />
                         </Link>
                       </td>
