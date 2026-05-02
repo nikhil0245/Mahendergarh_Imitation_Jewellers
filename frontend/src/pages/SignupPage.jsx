@@ -34,11 +34,19 @@ const SignupPage = () => {
     e.preventDefault();
 
     try {
-      await signup({
-        name: formData.name,
+      const payload = {
+        name: formData.name.trim(),
         password: formData.password,
-        email: signupMethod === "email" ? formData.email : "",
-        phone: signupMethod === "phone" ? formData.phone : "",
+      };
+
+      if (signupMethod === "email") {
+        payload.email = formData.email.trim();
+      } else {
+        payload.phone = formData.phone.trim();
+      }
+
+      await signup({
+        ...payload,
       });
       navigate("/");
     } catch (err) {

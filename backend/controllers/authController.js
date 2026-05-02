@@ -10,8 +10,8 @@ const generateToken = (id) =>
 
 const registerUser = async (req, res) => {
   const { name, email, phone, password } = req.body;
-  const normalizedEmail = email?.trim().toLowerCase();
-  const normalizedPhone = phone?.trim();
+  const normalizedEmail = email?.trim().toLowerCase() || undefined;
+  const normalizedPhone = phone?.trim() || undefined;
 
   if (!name || !password || (!normalizedEmail && !normalizedPhone)) {
     res.status(400);
@@ -35,12 +35,14 @@ const registerUser = async (req, res) => {
     throw new Error("A user with this email or phone number already exists");
   }
 
-  const user = await User.create({
-    name,
-    email: normalizedEmail,
-    phone: normalizedPhone,
-    password
-  });
+  const userPayload = {
+    name: name.trim(),
+    password,
+    ...(normalizedEmail && { email: normalizedEmail }),
+    ...(normalizedPhone && { phone: normalizedPhone }),
+  };
+
+  const user = await User.create(userPayload);
 
   if (user.email) {
     await sendEmail({

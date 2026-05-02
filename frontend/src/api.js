@@ -1,4 +1,23 @@
-const BASE_URL = "";
+const PRODUCTION_API_URL =
+  "https://mahendergarh-imitation-jewellers.onrender.com";
+const LOCAL_HOSTNAMES = new Set(["localhost", "127.0.0.1", "0.0.0.0"]);
+
+const getBaseUrl = () => {
+  if (typeof window === "undefined") {
+    return "";
+  }
+
+  if (LOCAL_HOSTNAMES.has(window.location.hostname)) {
+    return "";
+  }
+
+  return (import.meta.env.VITE_API_URL || PRODUCTION_API_URL).replace(
+    /\/+$/,
+    "",
+  );
+};
+
+const BASE_URL = getBaseUrl();
 
 const request = async (endpoint, options = {}) => {
   try {
