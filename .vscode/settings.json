@@ -1,0 +1,14 @@
+{
+  "java.jdt.ls.java.home": "${workspaceFolder}/.tools/jdk/temurin-21/Contents/Home",
+  "java.configuration.updateBuildConfiguration": "automatic",
+  "java.test.config": {
+    "name": "TestNG Local",
+    "testKind": "testng",
+    "workingDirectory": "${workspaceFolder}/testng-automation",
+    "vmArgs": [
+      "-DbaseUrl=http://localhost:3000",
+      "-DchromeDriver=${workspaceFolder}/.tools/chromedriver/chromedriver-mac-arm64/chromedriver"
+    ]
+  },
+  "java.test.defaultConfig": "TestNG Local"
+}

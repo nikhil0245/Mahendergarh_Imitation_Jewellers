@@ -1,0 +1,8 @@
+<!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd">
+<suite name="MIJ Automation Suite" verbose="1">
+  <test name="Project Automation Test Cases">
+    <classes>
+      <class name="com.mij.tests.ProjectAutomationTest"/>
+    </classes>
+  </test>
+</suite>

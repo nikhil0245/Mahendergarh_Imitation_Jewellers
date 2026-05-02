@@ -8,3 +8,7 @@ backend/uploads/*
 backend/.env
 frontend/.env
 dist
+.tools/
+testng-automation/target/
+test-output/
+surefire-reports/
